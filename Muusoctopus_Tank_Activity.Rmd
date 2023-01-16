@@ -5,8 +5,13 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
+
 ```{r}
+library(remotes)
+#install_github("KirtOnthank/CircularTimeHistogram")
+library(CircularTimeHistogram)
 library(googlesheets4)
+library(maptools)
 ```
 
 
@@ -23,3 +28,36 @@ activity$realtime[2]-activity$realtime[1]
 
 ```
 
+
+# 
+```{r}
+unique(activity$Behavior)
+```
+
+
+
+```{r}
+DayHist(activity$realtime[activity$Behavior=="Entering Burrow"],date="07/31/2022",hist.zoom=4.9,
+        hist.col="grey",
+        day.col="#C59998",
+        night.col="#98C599")
+```
+
+```{r}
+DayHist(activity$realtime[activity$Behavior=="Exiting Burrow"],date="07/31/2022",hist.zoom=4)
+```
+
+
+```{r}
+DayHist(activity$realtime,date="07/31/2022",hist.zoom=12)
+```
+
+
+```{r}
+DayHist(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&activity$Octopus_Tank!="Joe_CS1"&activity$Octopus_Tank!="Naddlie_CS1"&activity$Octopus_Tank!="Rian_CS5"],date="07/31/2022",hist.zoom=10)
+```
+
+
+```{r}
+DayHist(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|activity$Octopus_Tank=="Joe_CS1"|activity$Octopus_Tank=="Naddlie_CS1"|activity$Octopus_Tank=="Rian_CS5"],date="07/31/2022",hist.zoom=10)
+```
