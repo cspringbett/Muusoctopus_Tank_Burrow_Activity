@@ -13,6 +13,7 @@ library(CircularTimeHistogram)
 library(googlesheets4)
 library(maptools)
 library(png)
+library(lubridate)
 ```
 
 This block of code reads in data from a sheet on a google sheet titled "Tank Burrows" using the read_sheet function from the googlesheets4 library.
@@ -78,4 +79,56 @@ The final block of code creates a table showing the frequency of each combinatio
 ```{r}
 table(activity$Behavior,activity$Octopus_Tank)
 ```
+
+
+# Statistical Tests
+
+Running a chi-square test on total activity
+```{r}
+activity.total=c(sum(hour(activity$realtime)>6&hour(activity$realtime)<21,na.rm=T),
+  sum(hour(activity$realtime)<6|hour(activity$realtime)>21,na.rm=T))
+
+activity.total.probs=c(15/24,9/24)
+
+
+
+activity.total.chi=chisq.test(activity.total,p=activity.total.probs)
+
+activity.total.chi
+```
+
+
+
+Running a chi-squared test on activity of only burrowing octopuses
+```{r}
+activity.burrowers=c(
+  sum(hour(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"])>6&
+        hour(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"])<21,na.rm=T),
+  sum(hour(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"])<6|
+        hour(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"])>21,na.rm=T)
+  )
+
+activity.total.probs=c(15/24,9/24)
+
+
+
+activity.burrowers.chi=chisq.test(activity.burrowers,p=activity.total.probs)
+
+activity.burrowers.chi
+```
+
+
+
 
