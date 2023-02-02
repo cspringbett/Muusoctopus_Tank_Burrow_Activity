@@ -12,36 +12,44 @@ library(remotes)
 library(CircularTimeHistogram)
 library(googlesheets4)
 library(maptools)
+<<<<<<< HEAD
 y
+=======
+library(png)
+library(lubridate)
+>>>>>>> a89521bc849721c1d07112f8521de8dca5b4e4e3
 ```
 
-
+This block of code reads in data from a sheet on a google sheet titled "Tank Burrows" using the read_sheet function from the googlesheets4 library.
 ```{r}
 activity=read_sheet("1ckVjS4Jw9o_eg_l_TAwDFNp_evuu36sFHmXyUqT6YqA", sheet="Tank Burrows")
 ```
 
+
+This block of code processes the data by replacing parts of the "File Name" column with new values, in order to create a new column "time". Then, it creates another column "realtime", by parsing the "time" column as a date-time object using the strptime function.
 ```{r}
 activity$time=gsub("\\d{5}__TE_D(\\d{4})(\\d{2})(\\d{2})_T(\\d{2})(\\d{2})(\\d{2}).*","\\1-\\2-\\3 \\4:\\5:\\6", activity$`File Name`)
 
 activity$realtime=strptime(activity$time,"%Y-%m-%d %H:%M:%S")
+```
 
-activity$realtime[2]-activity$realtime[1]
-
+## Filtering out the distrubed/idle triggers
+This block of code filters out any rows where the "Filter" column is not "Normal".
+```{r}
+activity=activity[activity$Filter=="Normal",]
 ```
 
 
-# 
+
+This block of code creates a table showing the frequency of each value in the "Filter" column.
 ```{r}
-unique(activity$Behavior)
+table(activity$Filter)
 ```
 
-
-
+# Plots
+The next five blocks of code use the DayHist function from the CircularTimeHistogram library to create plots of octopus activity data, filtered by behavior and tank. The date parameter is set to "07/31/2022" and the hist.zoom parameter is set to different values for each plot.
 ```{r}
-DayHist(activity$realtime[activity$Behavior=="Entering Burrow"],date="07/31/2022",hist.zoom=4.9,
-        hist.col="grey",
-        day.col="#C59998",
-        night.col="#98C599")
+DayHist(activity$realtime[activity$Behavior=="Entering Burrow"],date="07/31/2022",hist.zoom=4.5)
 ```
 
 ```{r}
@@ -55,10 +63,76 @@ DayHist(activity$realtime,date="07/31/2022",hist.zoom=12)
 
 
 ```{r}
-DayHist(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&activity$Octopus_Tank!="Joe_CS1"&activity$Octopus_Tank!="Naddlie_CS1"&activity$Octopus_Tank!="Rian_CS5"],date="07/31/2022",hist.zoom=10)
+DayHist(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"],
+        date="07/31/2022",
+        hist.zoom=9)
 ```
 
 
 ```{r}
-DayHist(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|activity$Octopus_Tank=="Joe_CS1"|activity$Octopus_Tank=="Naddlie_CS1"|activity$Octopus_Tank=="Rian_CS5"],date="07/31/2022",hist.zoom=10)
+DayHist(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|activity$Octopus_Tank=="Joe_CS1"|activity$Octopus_Tank=="Naddlie_CS1"|activity$Octopus_Tank=="Rian_CS5"],
+        date="07/31/2022",
+        hist.zoom=13)
 ```
+
+
+The final block of code creates a table showing the frequency of each combination of behavior and tank.
+```{r}
+table(activity$Behavior,activity$Octopus_Tank)
+```
+
+
+# Statistical Tests
+
+Running a chi-square test on total activity
+```{r}
+activity.total=c(sum(hour(activity$realtime)>6&hour(activity$realtime)<21,na.rm=T),
+  sum(hour(activity$realtime)<6|hour(activity$realtime)>21,na.rm=T))
+
+activity.total.probs=c(15/24,9/24)
+
+
+
+activity.total.chi=chisq.test(activity.total,p=activity.total.probs)
+
+activity.total.chi
+```
+
+
+
+Running a chi-squared test on activity of only burrowing octopuses
+```{r}
+activity.burrowers=c(
+  sum(hour(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"])>6&
+        hour(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"])<21,na.rm=T),
+  sum(hour(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"])<6|
+        hour(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
+                            activity$Octopus_Tank!="Joe_CS1"&
+                            activity$Octopus_Tank!="Naddlie_CS1"&
+                            activity$Octopus_Tank!="Rian_CS5"])>21,na.rm=T)
+  )
+
+activity.total.probs=c(15/24,9/24)
+
+
+
+activity.burrowers.chi=chisq.test(activity.burrowers,p=activity.total.probs)
+
+activity.burrowers.chi
+```
+
+
+
+
