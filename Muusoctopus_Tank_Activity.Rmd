@@ -138,5 +138,8 @@ activity.burrowers.chi=chisq.test(activity.burrowers,p=activity.total.probs)
 
 activity.burrowers.chi
 ```
+```{r}
+activity$realtime[activity$Behavior=="Entering Burrow"]
+```
 
 
