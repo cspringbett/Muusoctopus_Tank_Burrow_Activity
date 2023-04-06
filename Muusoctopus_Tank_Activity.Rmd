@@ -138,8 +138,34 @@ activity.burrowers.chi=chisq.test(activity.burrowers,p=activity.total.probs)
 
 activity.burrowers.chi
 ```
+Chi-squared test on entering burrow events
 ```{r}
-activity$realtime[activity$Behavior=="Entering Burrow"]
-```
+activity.entering=activity$realtime[activity$Behavior=="Entering Burrow"]
 
+activity.entering=c(sum(hour(activity.entering)>6&hour(activity.entering)<21,na.rm=T),
+  sum(hour(activity.entering)<6|hour(activity.entering)>21,na.rm=T))
+
+activity.entering.probs=c(15/24,9/24)
+
+
+
+activity.entering.chi=chisq.test(activity.entering,p=activity.entering.probs)
+
+activity.entering.chi
+```
+Chi-squared for exiting events
+```{r}
+activity.exiting=activity$realtime[activity$Behavior=="Exiting Burrow"]
+
+activity.exiting=c(sum(hour(activity.exiting)>6&hour(activity.exiting)<21,na.rm=T),
+  sum(hour(activity.exiting)<6|hour(activity.exiting)>21,na.rm=T))
+
+activity.exiting.probs=c(15/24,9/24)
+
+
+
+activity.exiting.chi=chisq.test(activity.exiting,p=activity.exiting.probs)
+
+activity.exiting.chi
+```
 
