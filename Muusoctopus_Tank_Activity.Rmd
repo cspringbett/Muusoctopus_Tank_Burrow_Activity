@@ -169,7 +169,7 @@ activity.exiting.chi=chisq.test(activity.exiting,p=activity.exiting.probs)
 activity.exiting.chi
 ```
 
-## Chi Squared of night/day activity distribution of burrowers versus non-burrowers
+Chi Squared for non-burrowers
 
 ```{r}
 activity.nonburrowers=c(
@@ -191,6 +191,17 @@ activity.nonburrowers=c(
                             activity$Octopus_Tank=="Rian_CS5"])>21,na.rm=T)
   )
 
+activity.total.probs=c(15/24,9/24)
+
+
+
+activity.nonburrowers.chi=chisq.test(activity.nonburrowers,p=activity.total.probs)
+
+activity.nonburrowers.chi
+
+```
+## Chi Squared of night/day activity distribution of burrowers versus non-burrowers
+```{r}
 
 activity.mat=rbind(activity.burrowers,activity.nonburrowers)
 colnames(activity.mat)=c("day","night")
@@ -200,6 +211,7 @@ activity.mat
 prop.test(activity.mat)
 
 ```
+
 
 ```{r}
 barplot(t(activity.mat))
