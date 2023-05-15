@@ -53,6 +53,7 @@ dev.off()
 ```{r}
 png("exiting.png")
 DayHist(activity$realtime[activity$Behavior=="Exiting Burrow"],date="07/31/2022",hist.zoom=4)
+text(-1,1,"A.",cex=4)
 dev.off()
 ```
 
