@@ -47,13 +47,14 @@ The next five blocks of code use the DayHist function from the CircularTimeHisto
 ```{r}
 png("entering.png")
 DayHist(activity$realtime[activity$Behavior=="Entering Burrow"],date="07/31/2022",hist.zoom=4.5)
+text(-1,1,"C.",cex=4)
 dev.off()
 ```
 
 ```{r}
 png("exiting.png")
 DayHist(activity$realtime[activity$Behavior=="Exiting Burrow"],date="07/31/2022",hist.zoom=4)
-text(-1,1,"A.",cex=4)
+text(-1,1,"D.",cex=4)
 dev.off()
 ```
 
@@ -73,6 +74,7 @@ DayHist(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
                             activity$Octopus_Tank!="Rian_CS5"],
         date="07/31/2022",
         hist.zoom=9)
+text(-1,1,"A.",cex=4)
 dev.off()
 ```
 
@@ -82,6 +84,7 @@ png("nonburrowers_total_activity.png")
 DayHist(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|activity$Octopus_Tank=="Joe_CS1"|activity$Octopus_Tank=="Naddlie_CS1"|activity$Octopus_Tank=="Rian_CS5"],
         date="07/31/2022",
         hist.zoom=13)
+text(-1,1,"B.",cex=4)
 dev.off()
 ```
 
