@@ -142,6 +142,7 @@ activity.burrowers.chi=chisq.test(activity.burrowers,p=activity.total.probs)
 
 activity.burrowers.chi
 ```
+
 Chi-squared test on entering burrow events
 ```{r}
 activity.entering=activity$realtime[activity$Behavior=="Entering Burrow"]
@@ -220,4 +221,6 @@ prop.test(activity.mat)
 ```{r}
 barplot(t(activity.mat))
 ```
+
+
 
