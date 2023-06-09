@@ -18,13 +18,13 @@ library(lubridate)
 
 This block of code reads in data from a sheet on a google sheet titled "Tank Burrows" using the read_sheet function from the googlesheets4 library.
 ```{r}
-activity=read_sheet("1ckVjS4Jw9o_eg_l_TAwDFNp_evuu36sFHmXyUqT6YqA", sheet="Tank Burrows")
+activity=read.csv(file="TankBurrows.csv")
 ```
 
 
 This block of code processes the data by replacing parts of the "File Name" column with new values, in order to create a new column "time". Then, it creates another column "realtime", by parsing the "time" column as a date-time object using the strptime function.
 ```{r}
-activity$time=gsub("\\d{5}__TE_D(\\d{4})(\\d{2})(\\d{2})_T(\\d{2})(\\d{2})(\\d{2}).*","\\1-\\2-\\3 \\4:\\5:\\6", activity$`File Name`)
+activity$time=gsub("\\d{5}__TE_D(\\d{4})(\\d{2})(\\d{2})_T(\\d{2})(\\d{2})(\\d{2}).*","\\1-\\2-\\3 \\4:\\5:\\6", activity$`File.Name`)
 
 activity$realtime=strptime(activity$time,"%Y-%m-%d %H:%M:%S")
 ```
