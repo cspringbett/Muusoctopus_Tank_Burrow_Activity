@@ -16,15 +16,16 @@ library(png)
 library(lubridate)
 ```
 
-This block of code reads in data from a sheet on a google sheet titled "Tank Burrows" using the read_sheet function from the googlesheets4 library.
+This block of code reads in data as a csv file
 ```{r}
-activity=read_sheet("1ckVjS4Jw9o_eg_l_TAwDFNp_evuu36sFHmXyUqT6YqA", sheet="Tank Burrows")
+activity=read.csv(file="TankBurrows.csv")
+
 ```
 
 
 This block of code processes the data by replacing parts of the "File Name" column with new values, in order to create a new column "time". Then, it creates another column "realtime", by parsing the "time" column as a date-time object using the strptime function.
 ```{r}
-activity$time=gsub("\\d{5}__TE_D(\\d{4})(\\d{2})(\\d{2})_T(\\d{2})(\\d{2})(\\d{2}).*","\\1-\\2-\\3 \\4:\\5:\\6", activity$`File Name`)
+activity$time=gsub("\\d{5}__TE_D(\\d{4})(\\d{2})(\\d{2})_T(\\d{2})(\\d{2})(\\d{2}).*","\\1-\\2-\\3 \\4:\\5:\\6", activity$`File.Name`)
 
 activity$realtime=strptime(activity$time,"%Y-%m-%d %H:%M:%S")
 ```
@@ -47,12 +48,14 @@ The next five blocks of code use the DayHist function from the CircularTimeHisto
 ```{r}
 png("entering.png")
 DayHist(activity$realtime[activity$Behavior=="Entering Burrow"],date="07/31/2022",hist.zoom=4.5)
+text(-1,1,"C.",cex=4)
 dev.off()
 ```
 
 ```{r}
 png("exiting.png")
 DayHist(activity$realtime[activity$Behavior=="Exiting Burrow"],date="07/31/2022",hist.zoom=4)
+text(-1,1,"D.",cex=4)
 dev.off()
 ```
 
@@ -72,6 +75,7 @@ DayHist(activity$realtime[activity$Octopus_Tank!="Amanda_CS2"&
                             activity$Octopus_Tank!="Rian_CS5"],
         date="07/31/2022",
         hist.zoom=9)
+text(-1,1,"A.",cex=4)
 dev.off()
 ```
 
@@ -81,6 +85,7 @@ png("nonburrowers_total_activity.png")
 DayHist(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|activity$Octopus_Tank=="Joe_CS1"|activity$Octopus_Tank=="Naddlie_CS1"|activity$Octopus_Tank=="Rian_CS5"],
         date="07/31/2022",
         hist.zoom=13)
+text(-1,1,"B.",cex=4)
 dev.off()
 ```
 
@@ -138,6 +143,7 @@ activity.burrowers.chi=chisq.test(activity.burrowers,p=activity.total.probs)
 
 activity.burrowers.chi
 ```
+
 Chi-squared test on entering burrow events
 ```{r}
 activity.entering=activity$realtime[activity$Behavior=="Entering Burrow"]
@@ -168,4 +174,54 @@ activity.exiting.chi=chisq.test(activity.exiting,p=activity.exiting.probs)
 
 activity.exiting.chi
 ```
+
+Chi Squared for non-burrowers
+
+```{r}
+activity.nonburrowers=c(
+  sum(hour(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|
+                            activity$Octopus_Tank=="Joe_CS1"|
+                            activity$Octopus_Tank=="Naddlie_CS1"|
+                            activity$Octopus_Tank=="Rian_CS5"])>6&
+        hour(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|
+                            activity$Octopus_Tank=="Joe_CS1"|
+                            activity$Octopus_Tank=="Naddlie_CS1"|
+                            activity$Octopus_Tank=="Rian_CS5"])<21,na.rm=T),
+  sum(hour(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|
+                            activity$Octopus_Tank=="Joe_CS1"|
+                            activity$Octopus_Tank=="Naddlie_CS1"|
+                            activity$Octopus_Tank=="Rian_CS5"])<6|
+        hour(activity$realtime[activity$Octopus_Tank=="Amanda_CS2"|
+                            activity$Octopus_Tank=="Joe_CS1"|
+                            activity$Octopus_Tank=="Naddlie_CS1"|
+                            activity$Octopus_Tank=="Rian_CS5"])>21,na.rm=T)
+  )
+
+activity.total.probs=c(15/24,9/24)
+
+
+
+activity.nonburrowers.chi=chisq.test(activity.nonburrowers,p=activity.total.probs)
+
+activity.nonburrowers.chi
+
+```
+## Chi Squared of night/day activity distribution of burrowers versus non-burrowers
+```{r}
+
+activity.mat=rbind(activity.burrowers,activity.nonburrowers)
+colnames(activity.mat)=c("day","night")
+row.names(activity.mat)=c("burrowers","non.burrowers")
+activity.mat
+
+prop.test(activity.mat)
+
+```
+
+
+```{r}
+barplot(t(activity.mat))
+```
+
+
 
