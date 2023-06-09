@@ -16,7 +16,7 @@ library(png)
 library(lubridate)
 ```
 
-This block of code reads in data from a sheet on a google sheet titled "Tank Burrows" using the read_sheet function from the googlesheets4 library.
+Read in data as csv
 ```{r}
 activity=read.csv(file="TankBurrows.csv")
 ```
